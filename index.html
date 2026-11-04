@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14283d"><title>Power Strength Gym</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--navy:#14283d;--gold:#e3b44f;--bg:#f3f5f8;--card:#fff;--ink:#17212b;--muted:#6b7785;--green:#168653;--red:#c34444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--navy);color:white;padding:20px 16px 16px;position:sticky;top:0;z-index:3}header h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:#d5dfeb;font-size:12px}
+nav{display:flex;overflow:auto;gap:8px;padding:10px;background:white;position:sticky;top:75px;z-index:2;border-bottom:1px solid #e5e9ef}
+nav button{white-space:nowrap;border:0;border-radius:20px;padding:9px 13px;background:#eef1f5;color:#26384a;font-weight:600}nav button.active{background:var(--navy);color:white}
+main{padding:14px;max-width:760px;margin:auto}.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat,.panel,.member{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 9px #14283d0b;margin-bottom:12px}.stat small,.muted{color:var(--muted)}.stat strong{display:block;font-size:24px;margin-top:5px}.panel h2{font-size:17px;margin:0 0 12px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{cursor:pointer}.primary{background:var(--navy);color:white;border:0;border-radius:10px;padding:12px 15px;font-weight:650}.secondary{background:#eef1f5;color:#24364a;border:0;border-radius:10px;padding:10px 12px;font-weight:600}.danger{background:#fff0f0;color:var(--red);border:0;border-radius:9px;padding:9px 11px}
+label{display:block;font-size:13px;font-weight:650;margin:10px 0 5px}input,select{width:100%;padding:12px;border:1px solid #d6dde6;border-radius:9px;background:white;font:inherit}form .primary{width:100%;margin-top:14px}
+.member{display:flex;justify-content:space-between;gap:10px;align-items:center}.member strong{display:block}.tag{font-size:11px;border-radius:20px;padding:4px 8px;background:#fff1d4;color:#875b08}.tag.paid{background:#e5f6ed;color:#12683f}.member-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.member-actions button{font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:24px}.hint{font-size:12px;color:var(--muted);line-height:1.5}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.notice{background:#fff8e7;border:1px solid #f0dfb2;border-radius:10px;padding:11px;font-size:12px;line-height:1.5}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:24px}
+@media(min-width:600px){main{padding:22px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><h1>🏋️ POWER STRENGTH GYM</h1><p>Gym management · Members · Fees · Attendance</p></header>
+<nav id="tabs">
+<button class="active" data-page="dashboard">Dashboard</button><button data-page="members">Members</button><button data-page="attendance">Attendance</button><button data-page="payments">Payments</button><button data-page="expenses">Expenses</button><button data-page="backup">Backup</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+ <div class="grid">
+  <div class="stat"><small>Total members</small><strong id="sTotal">0</strong></div>
+  <div class="stat"><small>Fees paid</small><strong id="sPaid">0</strong></div>
+  <div class="stat"><small>Payment due</small><strong id="sDue">0</strong></div>
+  <div class="stat"><small>Fees collected</small><strong id="sCollected">₹0</strong></div>
+ </div>
+ <div class="panel"><h2>Business overview</h2><div class="row"><span class="muted">Pending fees</span><b id="sPending">₹0</b></div><hr style="border:0;border-top:1px solid #edf0f3"><div class="row"><span class="muted">Recorded expenses</span><b id="sExpenses">₹0</b></div><hr style="border:0;border-top:1px solid #edf0f3"><div class="row"><span>Collected minus expenses</span><b id="sBalance">₹0</b></div></div>
+ <button class="primary" onclick="showPage('members')">＋ Add a member</button>
+</section>
+<section id="members" class="page">
+ <div class="panel"><h2>Add member</h2><form id="memberForm">
+ <label>Full name</label><input id="mName" required maxlength="80" placeholder="Member name">
+ <label>WhatsApp mobile number</label><input id="mPhone" required inputmode="tel" placeholder="e.g. 919876543210">
+ <p class="hint">Enter country code with number, digits only is best (India: 91 followed by 10-digit number).</p>
+ <label>Membership plan</label><select id="mPlan"><option>Monthly</option><option>3 Months</option><option>6 Months</option><option>Yearly</option></select>
+ <label>Fee (₹)</label><input id="mFee" type="number" min="1" step="1" required placeholder="1500">
+ <label>Membership start date</label><input id="mStart" type="date" required>
+ <label>Payment status</label><select id="mPaid"><option value="false">Pending</option><option value="true">Paid</option></select>
+ <button class="primary">Save member</button></form></div>
+ <div class="row"><h2>Member list</h2><span class="muted" id="memberCount">0 members</span></div><div id="memberList"></div>
+</section>
+<section id="attendance" class="page"><div class="panel"><h2>Daily attendance</h2><label>Date</label><input type="date" id="attDate"><p class="hint">Tap Present or Absent for each member. Attendance is saved by date.</p></div><div id="attendanceList"></div></section>
+<section id="payments" class="page"><div class="panel"><h2>Payment summary</h2><div class="row"><span class="muted">Collected</span><b id="pCollected">₹0</b></div><div class="row"><span class="muted">Pending</span><b id="pPending">₹0</b></div></div><div id="paymentList"></div></section>
+<section id="expenses" class="page"><div class="panel"><h2>Add expense</h2><form id="expenseForm"><label>Description</label><input id="eName" required placeholder="Rent, electricity, equipment"><label>Amount (₹)</label><input id="eAmount" type="number" min="1" required placeholder="Amount"><label>Date</label><input id="eDate" type="date" required><button class="primary">Save expense</button></form></div><div class="row"><h2>Expense records</h2><b id="expenseTotal">₹0</b></div><div id="expenseList"></div></section>
+<section id="backup" class="page"><div class="panel"><h2>Data backup & restore</h2><p class="hint">Export a copy regularly and keep it somewhere safe. Importing a backup replaces the current records on this device.</p><div class="actions"><button class="primary" id="exportBtn">Download backup</button><label class="secondary" style="margin:0">Restore backup<input id="importFile" type="file" accept="application/json" style="display:none"></label></div></div><div class="notice"><b>Privacy & storage:</b> Member information is stored in this browser on this device. It is not automatically synced to another phone or cloud account. Anyone with access to this device/browser may be able to view it. Protect your phone and export backups securely.</div><div class="panel"><h2>WhatsApp reminders</h2><p class="hint">The app opens WhatsApp with a fee reminder message ready. You review and press Send yourself. It does not send messages automatically.</p></div></section>
+</main>
+<footer>Power Strength Gym · Keep a secure backup of your records</footer>
+<script>
+const DB='PowerStrengthGymDB', STORE='records';
+let db;
+const today=()=>new Date().toISOString().slice(0,10);
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN');
+function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>{db=r.result;resolve()};r.onerror=()=>reject(r.error)})}
+function getData(){return new Promise((resolve,reject)=>{const r=db.transaction(STORE).objectStore(STORE).get('all');r.onsuccess=()=>resolve(r.result||{members:[],expenses:[],attendance:{}});r.onerror=()=>reject(r.error)})}
+async function saveData(){return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(data,'all');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+let data={members:[],expenses:[],attendance:{}};
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));render()}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function sums(){const paid=data.members.filter(m=>m.paid),due=data.members.filter(m=>!m.paid);return {collected:paid.reduce((a,m)=>a+Number(m.fee),0),pending:due.reduce((a,m)=>a+Number(m.fee),0),expenses:data.expenses.reduce((a,e)=>a+Number(e.amount),0)}}
+function render(){const s=sums();sTotal.textContent=data.members.length;sPaid.textContent=data.members.filter(m=>m.paid).length;sDue.textContent=data.members.filter(m=>!m.paid).length;sCollected.textContent=money(s.collected);sPending.textContent=money(s.pending);sExpenses.textContent=money(s.expenses);sBalance.textContent=money(s.collected-s.expenses);pCollected.textContent=money(s.collected);pPending.textContent=money(s.pending);memberCount.textContent=data.members.length+' members';expenseTotal.textContent=money(s.expenses);
+ memberList.innerHTML=data.members.length?data.members.map(m=>`<div class="member"><div><strong>${esc(m.name)}</strong><small class="muted">${esc(m.phone)} · ${esc(m.plan)} · ${money(m.fee)}</small><br><span class="tag ${m.paid?'paid':''}">${m.paid?'Paid':'Pending'}</span></div><div class="member-actions"><button class="secondary" onclick="togglePaid('${m.id}')">${m.paid?'Undo':'Mark paid'}</button><button class="secondary" onclick="remind('${m.id}')">WhatsApp</button><button class="danger" onclick="removeMember('${m.id}')">Delete</button></div></div>`).join(''):'<div class="empty">No members yet. Add your first member above.</div>';
+ paymentList.innerHTML=data.members.length?data.members.map(m=>`<div class="member"><div><strong>${esc(m.name)}</strong><small class="muted">${esc(m.plan)} · ${money(m.fee)}</small></div><div class="member-actions"><span class="tag ${m.paid?'paid':''}">${m.paid?'Paid':'Pending'}</span><button class="secondary" onclick="togglePaid('${m.id}')">${m.paid?'Undo':'Mark paid'}</button>${!m.paid?`<button class="secondary" onclick="remind('${m.id}')">Remind</button>`:''}</div></div>`).join(''):'<div class="empty">No payment records.</div>';
+ const day=attDate.value||today();const todays=data.attendance[day]||{};attendanceList.innerHTML=data.members.length?data.members.map(m=>`<div class="member"><div><strong>${esc(m.name)}</strong><small class="muted">${esc(m.phone)}</small></div><div class="member-actions"><button class="secondary" onclick="setAttendance('${m.id}','present')">${todays[m.id]==='present'?'✓ Present':'Present'}</button><button class="secondary" onclick="setAttendance('${m.id}','absent')">${todays[m.id]==='absent'?'✓ Absent':'Absent'}</button></div></div>`).join(''):'<div class="empty">Add members to mark attendance.</div>';
+ expenseList.innerHTML=data.expenses.length?data.expenses.slice().reverse().map(e=>`<div class="member"><div><strong>${esc(e.name)}</strong><small class="muted">${esc(e.date)}</small></div><b>${money(e.amount)}</b><button class="danger" onclick="removeExpense('${e.id}')">Delete</button></div>`).join(''):'<div class="empty">No expenses recorded.</div>';
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('memberForm').addEventListener('submit',async e=>{e.preventDefault();const phone=mPhone.value.replace(/\D/g,'');if(phone.length<10){alert('Please enter a valid phone number including country code.');return}data.members.push({id:crypto.randomUUID(),name:mName.value.trim(),phone,plan:mPlan.value,fee:Number(mFee.value),start:mStart.value,paid:mPaid.value==='true'});await saveData();e.target.reset();mStart.value=today();mFee.value='1500';render();alert('Member saved.')});
+window.togglePaid=async id=>{const m=data.members.find(x=>x.id===id);if(m){m.paid=!m.paid;await saveData();render()}};
+window.removeMember=async id=>{if(confirm('Delete this member?')){data.members=data.members.filter(x=>x.id!==id);await saveData();render()}};
+window.remind=id=>{const m=data.members.find(x=>x.id===id);if(!m)return;const msg=`Hello ${m.name}, this is a friendly reminder from Power Strength Gym that your ${m.plan} membership fee of ${money(m.fee)} is pending. Please contact the gym to confirm payment. Thank you!`;window.open(`https://wa.me/${m.phone}?text=${encodeURIComponent(msg)}`,'_blank')};
+document.getElementById('attDate').value=today();document.getElementById('attDate').addEventListener('change',render);
+window.setAttendance=async(id,status)=>{const d=attDate.value;if(!data.attendance[d])data.attendance[d]={};data.attendance[d][id]=status;await saveData();render()};
+document.getElementById('expenseForm').addEventListener('submit',async e=>{e.preventDefault();data.expenses.push({id:crypto.randomUUID(),name:eName.value.trim(),amount:Number(eAmount.value),date:eDate.value});await saveData();e.target.reset();eDate.value=today();render();alert('Expense saved.')});
+window.removeExpense=async id=>{if(confirm('Delete this expense?')){data.expenses=data.expenses.filter(x=>x.id!==id);await saveData();render()}};
+exportBtn.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='power-strength-gym-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)});
+importFile.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const v=JSON.parse(await f.text());if(!Array.isArray(v.members)||!Array.isArray(v.expenses)||typeof v.attendance!=='object')throw Error();if(confirm('Replace all current app records with this backup?')){data=v;await saveData();render();alert('Backup restored.')}}catch{alert('This backup file is not valid.')}e.target.value=''});
+(async()=>{try{await openDB();data=await getData();mStart.value=today();eDate.value=today();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(e){alert('Your browser could not open local storage. Please use current Chrome on Android.')}})();
+</script>
+</body></html>
