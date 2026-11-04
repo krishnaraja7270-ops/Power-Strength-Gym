@@ -42,6 +42,10 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:24px}
  <div class="panel"><h2>Add member</h2><form id="memberForm">
  <label>Full name</label><input id="mName" required maxlength="80" placeholder="Member name">
  <label>WhatsApp mobile number</label><input id="mPhone" required inputmode="tel" placeholder="e.g. 919876543210">
+  <label>Occupation</label>
+<input type="text" id="occupation" placeholder="Enter Occupation">
+<label>Plan End Date</label>
+<input type="date" id="planEndDate">
  <p class="hint">Enter country code with number, digits only is best (India: 91 followed by 10-digit number).</p>
  <label>Membership plan</label><select id="mPlan"><option>Monthly</option><option>3 Months</option><option>6 Months</option><option>Yearly</option></select>
  <label>Fee (₹)</label><input id="mFee" type="number" min="1" step="1" required placeholder="1500">
